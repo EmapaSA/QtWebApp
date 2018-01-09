@@ -8,10 +8,9 @@
 
 using namespace stefanfrings;
 
-HttpConnectionHandler::HttpConnectionHandler(QSettings* settings, HttpRequestHandler* requestHandler, QSslConfiguration* sslConfiguration)
+HttpConnectionHandler::HttpConnectionHandler(std::shared_ptr<QSettings> settings, HttpRequestHandler* requestHandler, QSslConfiguration* sslConfiguration)
     : QThread()
 {
-    Q_ASSERT(settings!=0);
     Q_ASSERT(requestHandler!=0);
     this->settings=settings;
     this->requestHandler=requestHandler;
@@ -193,7 +192,7 @@ void HttpConnectionHandler::read()
         if (currentRequest->getStatus()==HttpRequest::complete)
         {
             readTimer.stop();
-            qDebug("HttpConnectionHandler (%p): received request",this);
+//            qDebug("HttpConnectionHandler (%p): received request",this);
 
             // Copy the Connection:close header to the response
             HttpResponse response(socket);
@@ -231,7 +230,7 @@ void HttpConnectionHandler::read()
                 response.write(QByteArray(),true);
             }
 
-            qDebug("HttpConnectionHandler (%p): finished request",this);
+//            qDebug("HttpConnectionHandler (%p): finished request",this);
 
             // Find out whether the connection must be closed
             if (!closeConnection)

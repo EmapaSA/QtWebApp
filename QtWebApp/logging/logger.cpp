@@ -14,21 +14,19 @@
 using namespace stefanfrings;
 
 Logger* Logger::defaultLogger=0;
-
-
 QThreadStorage<QHash<QString,QString>*> Logger::logVars;
-
-
+QHash<QString,QString>* Logger::globalVars;
 QMutex Logger::mutex;
-
 
 Logger::Logger(QObject* parent)
     : QObject(parent),
-    msgFormat("{timestamp} {type} {msg}"),
+    msgFormat("<timestamp> <type> <msg>"),
     timestampFormat("dd.MM.yyyy hh:mm:ss.zzz"),
     minLevel(QtDebugMsg),
     bufferSize(0)
-    {}
+    {
+        globalVars = new QHash<QString,QString>;
+    }
 
 
 Logger::Logger(const QString msgFormat, const QString timestampFormat, const QtMsgType minLevel, const int bufferSize, QObject* parent)
@@ -38,8 +36,8 @@ Logger::Logger(const QString msgFormat, const QString timestampFormat, const QtM
     this->timestampFormat=timestampFormat;
     this->minLevel=minLevel;
     this->bufferSize=bufferSize;
+    globalVars = new QHash<QString,QString>;
 }
-
 
 void Logger::msgHandler(const QtMsgType type, const QString &message, const QString &file, const QString &function, const int line)
 {
@@ -130,6 +128,12 @@ void Logger::set(const QString& name, const QString& value)
     mutex.unlock();
 }
 
+void Logger::setGlobal(const QString& name, const QString& value)
+{
+    mutex.lock();
+    globalVars->insert(name,value);
+    mutex.unlock();
+}
 
 void Logger::clear(const bool buffer, const bool variables)
 {
@@ -142,9 +146,11 @@ void Logger::clear(const bool buffer, const bool variables)
             delete logMessage;
         }
     }
-    if (variables && logVars.hasLocalData())
+    if (variables)
     {
-        logVars.localData()->clear();
+        if (logVars.hasLocalData())
+            logVars.localData()->clear();
+        globalVars->clear();
     }
     mutex.unlock();
 }
@@ -162,7 +168,7 @@ void Logger::log(const QtMsgType type, const QString& message, const QString &fi
         }
         QList<LogMessage*>* buffer=buffers.localData();
         // Append the decorated log message
-        LogMessage* logMessage=new LogMessage(type,message,logVars.localData(),file,function,line);
+        LogMessage* logMessage=new LogMessage(type,message,logVars.localData(),globalVars,file,function,line);
         buffer->append(logMessage);
         // Delete oldest message if the buffer became too large
         if (buffer->size()>bufferSize)
@@ -184,7 +190,7 @@ void Logger::log(const QtMsgType type, const QString& message, const QString &fi
     else {
         if (type>=minLevel)
         {
-            LogMessage logMessage(type,message,logVars.localData(),file,function,line);
+            LogMessage logMessage(type,message,logVars.localData(),globalVars,file,function,line);
             write(&logMessage);
         }
     }

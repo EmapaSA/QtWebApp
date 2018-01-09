@@ -13,6 +13,7 @@
 #include <QSettings>
 #include <QTimer>
 #include <QThread>
+#include <memory>
 #include "httpglobal.h"
 #include "httprequest.h"
 #include "httprequesthandler.h"
@@ -58,7 +59,7 @@ public:
       @param requestHandler Handler that will process each incoming HTTP request
       @param sslConfiguration SSL (HTTPS) will be used if not NULL
     */
-    HttpConnectionHandler(QSettings* settings, HttpRequestHandler* requestHandler, QSslConfiguration* sslConfiguration=NULL);
+    HttpConnectionHandler(std::shared_ptr<QSettings> settings, HttpRequestHandler* requestHandler, QSslConfiguration* sslConfiguration=NULL);
 
     /** Destructor */
     virtual ~HttpConnectionHandler();
@@ -72,7 +73,7 @@ public:
 private:
 
     /** Configuration settings */
-    QSettings* settings;
+    std::shared_ptr<QSettings> settings;
 
     /** TCP socket of the current connection  */
     QTcpSocket* socket;

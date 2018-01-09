@@ -10,7 +10,7 @@
 
 using namespace stefanfrings;
 
-HttpListener::HttpListener(QSettings* settings, HttpRequestHandler* requestHandler, QObject *parent)
+HttpListener::HttpListener(std::shared_ptr<QSettings> settings, HttpRequestHandler* requestHandler, QObject *parent)
     : QTcpServer(parent)
 {
     Q_ASSERT(settings!=0);
@@ -36,7 +36,7 @@ void HttpListener::listen()
 {
     if (!pool)
     {
-        pool=new HttpConnectionHandlerPool(settings,requestHandler);
+        pool=new HttpConnectionHandlerPool(settings, requestHandler);
     }
     QString host = settings->value("host").toString();
     int port=settings->value("port").toInt();

@@ -10,7 +10,7 @@
 
 using namespace stefanfrings;
 
-HttpRequest::HttpRequest(QSettings* settings)
+HttpRequest::HttpRequest(std::shared_ptr<QSettings> settings)
 {
     status=waitForRequest;
     currentSize=0;
@@ -18,8 +18,8 @@ HttpRequest::HttpRequest(QSettings* settings)
     maxSize=settings->value("maxRequestSize","16000").toInt();
     maxMultiPartSize=settings->value("maxMultiPartSize","1000000").toInt();
     tempFile=NULL;
+    this->settings = settings;
 }
-
 
 void HttpRequest::readRequest(QTcpSocket* socket)
 {

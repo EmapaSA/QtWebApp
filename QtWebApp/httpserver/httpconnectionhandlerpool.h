@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QObject>
 #include <QMutex>
+#include <memory>
 #include "httpglobal.h"
 #include "httpconnectionhandler.h"
 
@@ -56,7 +57,7 @@ public:
       @param requestHandler The handler that will process each received HTTP request.
       @warning The requestMapper gets deleted by the destructor of this pool
     */
-    HttpConnectionHandlerPool(QSettings* settings, HttpRequestHandler* requestHandler);
+    HttpConnectionHandlerPool(std::shared_ptr<QSettings> settings, HttpRequestHandler* requestHandler);
 
     /** Destructor */
     virtual ~HttpConnectionHandlerPool();
@@ -67,7 +68,7 @@ public:
 private:
 
     /** Settings for this pool */
-    QSettings* settings;
+    std::shared_ptr<QSettings> settings;
 
     /** Will be assigned to each Connectionhandler during their creation */
     HttpRequestHandler* requestHandler;

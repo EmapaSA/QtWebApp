@@ -9,10 +9,10 @@
 
 using namespace stefanfrings;
 
-HttpConnectionHandlerPool::HttpConnectionHandlerPool(QSettings* settings, HttpRequestHandler* requestHandler)
+HttpConnectionHandlerPool::HttpConnectionHandlerPool(std::shared_ptr<QSettings> settings, HttpRequestHandler* requestHandler)
     : QObject()
 {
-    Q_ASSERT(settings!=0);
+    Q_ASSERT(settings.get()!=0);
     this->settings=settings;
     this->requestHandler=requestHandler;
     this->sslConfiguration=NULL;
@@ -54,7 +54,7 @@ HttpConnectionHandler* HttpConnectionHandlerPool::getConnectionHandler()
         int maxConnectionHandlers=settings->value("maxThreads",100).toInt();
         if (pool.count()<maxConnectionHandlers)
         {
-            freeHandler=new HttpConnectionHandler(settings,requestHandler,sslConfiguration);
+            freeHandler=new HttpConnectionHandler(settings, requestHandler, sslConfiguration);
             freeHandler->setBusy();
             pool.append(freeHandler);
         }

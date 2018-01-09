@@ -69,7 +69,7 @@ public:
       @param parent Parent object
       @see LogMessage for a description of the message decoration.
     */
-    Logger(const QString msgFormat="{timestamp} {type} {msg}", const QString timestampFormat="dd.MM.yyyy hh:mm:ss.zzz", const QtMsgType minLevel=QtDebugMsg, const int bufferSize=0, QObject* parent = 0);
+    Logger(const QString msgFormat="<timestamp> <type> <msg>", const QString timestampFormat="dd.MM.yyyy hh:mm:ss.zzz", const QtMsgType minLevel=QtDebugMsg, const int bufferSize=0, QObject* parent = 0);
 
     /** Destructor */
     virtual ~Logger();
@@ -99,6 +99,8 @@ public:
       @param value Value of the variable
     */
     static void set(const QString& name, const QString& value);
+
+    static void setGlobal(const QString& name, const QString& value);
 
     /**
       Clear the thread-local data of the current thread.
@@ -177,6 +179,8 @@ private:
 
     /** Thread local variables to be used in log messages */
     static QThreadStorage<QHash<QString,QString>*> logVars;
+
+    static QHash<QString,QString>* globalVars;
 
     /** Thread local backtrace buffers */
     QThreadStorage<QList<LogMessage*>*> buffers;

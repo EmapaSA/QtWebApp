@@ -9,6 +9,7 @@
 #include <QTcpServer>
 #include <QSettings>
 #include <QBasicTimer>
+#include <memory>
 #include "httpglobal.h"
 #include "httpconnectionhandler.h"
 #include "httpconnectionhandlerpool.h"
@@ -54,7 +55,7 @@ public:
       @param parent Parent object.
       @warning Ensure to close or delete the listener before deleting the request handler.
     */
-    HttpListener(QSettings* settings, HttpRequestHandler* requestHandler, QObject* parent = NULL);
+    HttpListener(std::shared_ptr<QSettings> settings, HttpRequestHandler* requestHandler, QObject* parent = NULL);
 
     /** Destructor */
     virtual ~HttpListener();
@@ -78,7 +79,7 @@ protected:
 private:
 
     /** Configuration settings for the HTTP server */
-    QSettings* settings;
+    std::shared_ptr<QSettings> settings;
 
     /** Point to the reuqest handler which processes all HTTP requests */
     HttpRequestHandler* requestHandler;

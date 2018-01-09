@@ -14,6 +14,7 @@
 #include <QSettings>
 #include <QTemporaryFile>
 #include <QUuid>
+#include <memory>
 #include "httpglobal.h"
 
 namespace stefanfrings {
@@ -48,7 +49,7 @@ public:
       Constructor.
       @param settings Configuration settings
     */
-    HttpRequest(QSettings* settings);
+    HttpRequest(std::shared_ptr<QSettings> settings);
 
     /**
       Destructor.
@@ -232,6 +233,8 @@ private:
     /** Buffer for collecting characters of request and header lines */
     QByteArray lineBuffer;
 
+public:
+    std::shared_ptr<QSettings> settings;
 };
 
 } // end of namespace

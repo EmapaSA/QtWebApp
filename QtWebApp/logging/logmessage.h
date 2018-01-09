@@ -48,7 +48,8 @@ public:
       @param function Name of the function where the message was generated
       @param line Line Number of the source file, where the message was generated
     */
-    LogMessage(const QtMsgType type, const QString& message, QHash<QString,QString>* logVars, const QString &file, const QString &function, const int line);
+    LogMessage(const QtMsgType type, const QString& message, QHash<QString,QString>* logVars, QHash<QString, QString>* globalLogVars,
+               const QString &file, const QString &function, const int line);
 
     /**
       Returns the log message as decorated string.
@@ -64,10 +65,14 @@ public:
     */
     QtMsgType getType() const;
 
+    QString getMessage() {return message;}
+    void setMessage(QString value) { message = value;}
+
 private:
 
     /** Logger variables */
     QHash<QString,QString> logVars;
+    QHash<QString,QString> globalLogVars;
 
     /** Date and time of creation */
     QDateTime timestamp;
@@ -78,9 +83,6 @@ private:
     /** ID number of the thread  */
     Qt::HANDLE threadId;
 
-    /** Message text */
-    QString message;
-
     /** Filename where the message was generated */
     QString file;
 
@@ -89,6 +91,9 @@ private:
 
     /** Line number where the message was generated */
     int line;
+
+    /** Message text */
+    QString message;
 
 };
 
